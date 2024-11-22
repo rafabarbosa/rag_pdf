@@ -6,8 +6,6 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from langchain_chroma import Chroma
 
-from langchain.embeddings import 
-
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
 
 from langchain.prompts import ChatPromptTemplate

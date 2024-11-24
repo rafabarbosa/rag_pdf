@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=myragdb
+      - POSTGRES_USER=myraguser
+      - POSTGRES_PASSWORD=myragpassword
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=mydatabase
+      - DATABASE_USER=myusername
+      - DATABASE_PASSWORD=mypassword
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

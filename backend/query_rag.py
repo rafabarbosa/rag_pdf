@@ -1,16 +1,17 @@
 import argparse
+import getpass
 import os
 import shutil
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from langchain_chroma import Chroma
-
-from langchain_ollama import OllamaEmbeddings, OllamaLLM
-
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-
 from langchain_core.globals import set_verbose, set_debug
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Disable verbose logging
 set_verbose(False)
@@ -30,7 +31,7 @@ Responda a pergunta baseada no contexto abaixo: {question}
 """
 
 def get_embedding_function():
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     return embeddings
 
 def load_documents():
@@ -119,14 +120,13 @@ def query_rag(query_text: str):
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
 
-    model = OllamaLLM(temperature=0, model="llama3.2")
+    model = ChatOpenAI(temperature=0, model="gpt-4o-mini")
     response_text = model.invoke(prompt)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"Response: {response_text}\nSources: {sources}"
     print(formatted_response)
     return response_text
-    
 
 def main():
     # Create CLI.

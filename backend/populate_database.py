@@ -1,16 +1,18 @@
 import argparse
 import os
+import getpass
 import shutil
 from langchain_community.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
-from langchain_ollama import OllamaEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
-
+from dotenv import load_dotenv
 
 CHROMA_PATH = "chroma"
 DATA_PATH = "data"
 
+load_dotenv()
 
 def main():
 
@@ -45,7 +47,7 @@ def split_documents(documents: list[Document]):
 
 def add_to_chroma(chunks: list[Document]):
     # Load the existing database.
-    embeddings = OllamaEmbeddings(model="llama3.2")
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     db = Chroma(
         persist_directory=CHROMA_PATH, embedding_function=embeddings
     )

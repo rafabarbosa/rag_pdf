@@ -1,39 +1,41 @@
 services:
-  db:
-    image: postgres:13
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=myragdb
-      - POSTGRES_USER=myraguser
-      - POSTGRES_PASSWORD=myragpassword
-
   backend:
     build:
       context: ./backend
     container_name: backend
+    networks:
+      - default
     volumes:
       - ./backend:/backend
     ports:
       - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - DEBUG=True
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=mydatabase
-      - DATABASE_USER=myusername
-      - DATABASE_PASSWORD=mypassword
 
   frontend:
     build:
       context: ./frontend
     container_name: frontend
+    networks:
+      - default
+    volumes:
+      - ./frontend:/frontend
     ports:
       - "3000:80"
     depends_on:
       - backend
 
-volumes:
-  postgres_data:
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 7869:11434
+    volumes:
+      - .:/code
+      - ./ollama/ollama:/root/.ollama
+    container_name: ollama
+    pull_policy: always
+    tty: true
+    restart: always
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+      - default

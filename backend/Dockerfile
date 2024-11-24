@@ -29,5 +29,11 @@ RUN apt-get update && \
 # Then copy the rest of the backend
 COPY . /backend/
 
+# Expose the port the app runs on
+EXPOSE 8000
+EXPOSE 11434
+
 # Run the application in development:
-CMD uvicorn api:app --reload
+# CMD uvicorn api:app --reload
+CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8000", "api:app", "--reload"]
+# CMD ["fastapi", "run", "app/main.py", "--port", "80"]
